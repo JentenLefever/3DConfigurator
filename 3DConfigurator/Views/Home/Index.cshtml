@@ -1,114 +1,97 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
+
 }
+
+@model _3DConfigurator.ViewModel.IndexViewModel
 
 
 <script src="~/js/three/three.js"></script>
 <script src="~/js/three/OrbitControls.js"></script>
 <script src="~/js/three/GLTFLoader.js"></script>
 <script src="~/js/three/OBJLoader.js"></script>
-<script>
-    var scene = new THREE.Scene();
-    scene.background = new THREE.Color( 0xc9c9c9 );
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-
-    var renderer = new THREE.WebGLRenderer();
-    renderer.gammaOutput = true;
-    renderer.gammaFactor = 2.2;
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    
-    document.body.appendChild(renderer.domElement);
-
-    //resize window
-    window.addEventListener('resize', function () {
-
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-    })
-
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-   var loader = new THREE.GLTFLoader();
 
 
 
-    loader.load(
-        // resource URL
-        'wwwroot/Objects/bal.gltf',
-        // called when resource is loaded
-        function (gltf) {
 
-          scene.add( gltf.scene );
-
-		gltf.animations; // Array<THREE.AnimationClip>
-		gltf.scene; // THREE.Scene
-		gltf.scenes; // Array<THREE.Scene>
-		gltf.cameras; // Array<THREE.Camera>
-		gltf.asset; // Object
-
-        })
-
-    var objLoader = new THREE.OBJLoader();
-
-    var light = new THREE.PointLight( 0xff0000, 1, 100 );
-    light.position.set(5, 5, 5 );
-    scene.add( light );
-
-    objLoader.load(
-        // resource URL
-        'wwwroot/Objects/tree.obj',
-        // called when resource is loaded
-        function (object) {
-
-          scene.add( object );
-
-		
-
-        })
-
-  
-    
-    
-    //Create the shape
-    var geometry = new THREE.BoxGeometry(1, 1, 1);
-
-    // Create Material
-      var material = new THREE.MeshBasicMaterial({color: 0xFF0000, wireframe: false});
-    var cube = new THREE.Mesh(geometry, material);
-  
-
-    //scene.add(cube);
-    camera.position.z = 3;
+<div class="ConfiguratieOptions">
+    <div class="split left">
+        <h1>load test</h1>
+        <h1>@Model.Name</h1>
+        <form asp-action="Index" enctype="multipart/form-data" method="post">
+            <dl>
+                <dt>
+                    <label asp-for="GltfUpload"></label>
+                </dt>
+                <dd>
+                    <input asp-for="GltfUpload" type="file">
+                    <span asp-validation-for="GltfUpload"></span>
+                </dd>
+            </dl>
+            <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
+            <button type="submit" value="Create">Add gltf</button>
+        </form>
 
 
-    //logic
-    var update = function () {
+        @if (Model.Materials != null)
+        {
 
-        //cube.rotation.x +=0.01
-        //cube.rotation.y +=0.005
-    };
+            <form name="Index" asp-controller="Home" asp-action="Index">
 
-    //Draw  scene
-    var render = function () {
-        renderer.render(scene, camera)
-    
+                <div>
 
-    };
+                    <label asp-for="SelectedMaterial"></label>
 
-    //run game loop(update, render , repeat)
-    var GameLoop = function () {
+                    <select name="SelectedMaterial" asp-for="Materials"
+                            asp-items="@(new SelectList(Model.Materials, "LogicalIndex", "Name"))">
+                        <option value="">-- Pick a Material --</option>
+                    </select>
+                    <span asp-validation-for="SelectedMaterial" class="text-danger"></span>
+                </div>
 
-        requestAnimationFrame(GameLoop);
-
-        update();
-
-        render();
-    };
-
-    GameLoop();
+                <button type="submit" value="Index">ChangeMaterial</button>
+            </form>
+        }
+    </div>
 
 
-</script>
+    <div id="materialpreview" class="split right">
+
+    </div>
+</div>
+
+
+
+
+
+
+
+
+@if (Model.SelectedMaterialfull != null)
+{
+    <div class="ConfiguratieOptions">
+        <div class="split left">
+
+
+            <h1>load test</h1>
+            <h1>@Model.SelectedMaterialfull.Name</h1>
+            <p> @Model.SelectedMaterialfull.Alpha</p>
+            <p> @Model.SelectedMaterialfull.DoubleSided</p>
+            @foreach (var item in Model.SelectedMaterialfull.Channels)
+            {
+                <p> @item.Parameter</p>
+                <p> @item.Key</p>
+                <p> @item.TextureCoordinate</p>
+                
+            }
+        </div>
+        <div id="CubePreview" class="split right">
+
+        </div>
+
+    </div>
+    <script src="~/js/3DConfigurator/Previewcube.js"></script>
+}
+
+
+<script src="~/js/3DConfigurator/SceneCreator.js"></script>

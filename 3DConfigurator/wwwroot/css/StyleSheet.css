@@ -5,7 +5,45 @@
 }
 
 canvas {
-width: 100%;
-height:100%;
+width: 50%;
+height:50%;
 background-color:grey;
+}
+
+.ConfiguratieOptions {
+    
+    height: 500px;
+    background-color:aqua;
+}
+
+.ConfiguratiePreview {
+    height: 500px;
+    width: 50%;
+}
+
+
+/* Split the screen in half */
+.split {
+    height: 500px;
+    width: 50%;
+    float:left;
+    z-index: 1;
+    top: 0;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+/* Control the left side */
+.left {
+    padding:15px;
+    left: 0;
+    background-color: grey;
+}
+
+/* Control the right side */
+.right {
+    padding:0;
+    right: 0;
+    background-color: lightgrey;
+    overflow:hidden;
 }
