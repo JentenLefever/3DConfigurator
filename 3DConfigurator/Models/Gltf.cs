@@ -10,6 +10,7 @@ namespace _3DConfigurator.Models
 
         public string Name { get; set; }
         public SharpGLTF.Schema2.ModelRoot GltfFile { get; set; }
+        
         public IEnumerable<SharpGLTF.Schema2.Scene> Scenes { get; set; }
         public IEnumerable<SharpGLTF.Schema2.Mesh> Meshes { get; set; }
         public IEnumerable<SharpGLTF.Schema2.Material> Materials { get; set; }

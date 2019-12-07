@@ -102,7 +102,7 @@ namespace _3DConfigurator.Controllers
                 var LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
                 gltf = gltfService.GltfInfo(LoadPath);
                 SharpGLTF.Schema2.Material selectedMaterial = gltf.Materials.ToList()[Convert.ToInt32(Uploadgltf.SelectedMaterial)];
-
+                
                 IndexViewModel indexViewModel = new IndexViewModel()
                 {
                     GltfFile = SharpGLTF.Schema2.ModelRoot.Load(LoadPath),
@@ -113,7 +113,7 @@ namespace _3DConfigurator.Controllers
                     Scenes = gltf.Scenes,
                     SelectedMaterialfull = selectedMaterial
                 };
-
+                
                 LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Cube.glb");
                 var previewcube = SharpGLTF.Schema2.ModelRoot.Load(LoadPath);
                 
@@ -129,29 +129,6 @@ namespace _3DConfigurator.Controllers
            
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangeMaterial(IndexViewModel changedMaterial)
-        {
-            GltfService gltfService = new GltfService();
-            Gltf gltf = new Gltf();
-            var LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
-            gltf = gltfService.GltfInfo(LoadPath);
-            SharpGLTF.Schema2.Material selectedMaterial = gltf.Materials.ToList()[Convert.ToInt32(changedMaterial.SelectedMaterial)];
-
-            IndexViewModel indexViewModel = new IndexViewModel()
-            {
-                GltfFile = SharpGLTF.Schema2.ModelRoot.Load(LoadPath),
-                Name = fileName,
-                Animations = gltf.Animations,
-                Materials = gltf.Materials,
-                Meshes = gltf.Meshes,
-                Scenes = gltf.Scenes,
-                SelectedMaterialfull = selectedMaterial
-            };
-
-
-            return View("Index",indexViewModel);
-        }
+       
     }
 }

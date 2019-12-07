@@ -7,7 +7,7 @@ namespace _3DConfigurator.Models
 {
     public class Materials
     {
-        public int ID { get; set; }
-        public int Name { get; set; }
+        public SharpGLTF.Schema2.Material Material { get; set; }
+        public IEnumerable<Channels> Channels { get; set; }
     }
 }

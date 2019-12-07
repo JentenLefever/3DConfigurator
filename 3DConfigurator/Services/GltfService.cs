@@ -19,8 +19,11 @@ namespace _3DConfigurator.Services
             currentGltfModel.Meshes = LoadedModel.LogicalMeshes.ToList();
             LoadedModel.SaveGLB(saveadres);
             return currentGltfModel;
-        }
 
+
+            
+        }
+        
         public Gltf GltfInfo(string objectAdres)
         {
 
