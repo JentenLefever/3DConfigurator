@@ -2,20 +2,21 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace _3DConfigurator.Services
 {
     public class EditGltfService : IEditGltfService
     {
-       
+
 
         //Create GltfModel
-        public GltfModel PopulateGltfModel(string objectAdres, string saveadres)
+        public GltfModel PopulateGltfModel(string objectAdres)
         {
             //Load Object
             GltfModel gltfModel = new GltfModel();
             gltfModel.gltf = SharpGLTF.Schema2.ModelRoot.Load(objectAdres);
-
+            gltfModel.Name = Path.GetFileName(objectAdres);
             //Object property lists
             List<Meshes> meshesInGltf = new List<Meshes>();
             List<Materials> materialsInMesh = new List<Materials>();
@@ -63,10 +64,47 @@ namespace _3DConfigurator.Services
             foreach (var item in gltfModel.gltf.LogicalImages)
             {
                 var img = Bitmap.FromStream(item.OpenImageFile());
-                img.Save("Texture"+i+".png", ImageFormat.Png);
+                img.Save("Texture" + i + ".png", ImageFormat.Png);
                 i++;
             }
             return channelImages;
         }
+
+        public Textures AddImageToTexture(Textures texture, string newTexturePath, string name)
+        {
+            var image = texture.Texture.LogicalParent.CreateImage(name);
+            image.SetSatelliteFile(newTexturePath);
+            texture.Image = image;
+            return texture;
+        }
+
+        public SharpGLTF.Schema2.Image ReadImage(string imagePath)
+            {
+            var image = texture.Texture.LogicalParent.CreateImage(name);
+            image.SetSatelliteFile(newTexturePath);
+            
+
+        }
+
+        public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres)
+        {
+            gltfmodel.gltf.SaveGLB(saveAdres);
+        }
+
+        public Materials newMaterialToMesh(Meshes meshes, string materialName)
+        {
+            Materials newmaterial = new Materials();
+            newmaterial.Material = meshes.Mesh.LogicalParent.CreateMaterial(materialName);
+            var index = newmaterial.Material.LogicalIndex;
+            foreach (var item in newmaterial.Material.Channels)
+            {
+                Textures newMaterialTexture = new Textures();
+                newMaterialTexture.Image = 
+            }
+            meshes.Mesh.Primitives[0].Material = newmaterial.Material;
+            return newmaterial;
+        }
+
+
     }
 }

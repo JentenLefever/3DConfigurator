@@ -25,7 +25,9 @@ namespace _3DConfigurator.Controllers
             _env = env;
             _logger = logger;
         }
-        
+
+       
+
         public IActionResult Index()
         {
             GltfService gltfService = new GltfService();

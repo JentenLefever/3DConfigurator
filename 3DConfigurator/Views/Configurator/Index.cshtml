@@ -1,21 +1,28 @@
-﻿@model IEnumerable<_3DConfigurator.Models.GltfModel>
+﻿@*@model _3DConfigurator.ViewModel.ConfiguratorViewModel
 
-@{
-    ViewData["Title"] = "Index";
-}
 
-<h1>Index</h1>
+<script src="~/js/three/three.js"></script>
+<script src="~/js/three/OrbitControls.js"></script>
+<script src="~/js/three/GLTFLoader.js"></script>
+<script src="~/js/three/OBJLoader.js"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="ConfiguratieOptions">
+    <div class="split left">
+        <h1>load test</h1>
 
-    </tbody>
-</table>
+                    <label> Meshes </label>
+
+                    <select asp-items="@(new SelectList(Model.gltf.Meshes, "LogicalIndex", "Name"))">
+                        <option value="">-- Pick a Material --</option>
+                    </select>
+                </div>      
+    </div>
+
+
+    <div id="materialpreview" class="split right">
+
+    </div>
+</div>
+
+
+<script src="~/js/3DConfigurator/SceneCreator.js"></script>*@

@@ -30,14 +30,16 @@ namespace _3DConfigurator.Controllers
             //service toevoegen
             EditGltfService editGltfService = new EditGltfService();
 
-            //Load Model
-            var loadCurrentObjectPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
-            var currentObject = editGltfService.PopulateGltfModel(loadCurrentObjectPath, loadCurrentObjectPath);
+            //Datamodel inlezen
+            var currentObject = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
 
             //Load Textures
             editGltfService.CreateTextures(currentObject);
-            
-            
+
+            //edit Texture Image
+            editGltfService.AddImageToTexture();
+            //Save Model
+            editGltfService.SaveCurrentGltf();
 
 
             return View();

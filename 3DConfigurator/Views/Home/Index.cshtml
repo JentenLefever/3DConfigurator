@@ -1,9 +1,9 @@
-﻿@{
+﻿@*@{
     ViewData["Title"] = "Home Page";
 
 }
 
-@model _3DConfigurator.ViewModel.IndexViewModel
+@model _3DConfigurator.ViewModel.ConfiguratorViewModel
 
 
 <script src="~/js/three/three.js"></script>
@@ -17,7 +17,7 @@
 <div class="ConfiguratieOptions">
     <div class="split left">
         <h1>load test</h1>
-        <h1>@Model.Name</h1>
+        <h1>@Model.gltf.Name</h1>
         <form asp-action="Index" enctype="multipart/form-data" method="post">
             <dl>
                 <dt>
@@ -32,17 +32,77 @@
             <button type="submit" value="Create">Add gltf</button>
         </form>
 
-
-        @if (Model.Materials != null)
+        @if (Model.gltf.MeshesVerzameling != null)
         {
 
-            <form name="Index" asp-controller="Home" asp-action="Index">
+            <form name="Index" asp-controller="Home" asp-action="Index" id="formmaterial">
 
                 <div>
 
                     <label asp-for="SelectedMaterial"></label>
 
-                    <select name="SelectedMaterial" asp-for="Materials"
+                    <select name="SelectedMaterial" asp-for="Materials" onchange="Changeselection()"
+                            asp-items="@(new SelectList(Model.Materials, "LogicalIndex", "Name"))">
+                        <option value="">-- Pick a Material --</option>
+                    </select>
+                    <span asp-validation-for="SelectedMaterial" class="text-danger"></span>
+                </div>
+
+                <button type="submit" value="Index">ChangeMaterial</button>
+            </form>
+        }
+
+
+        @if (Model.gltf.MeshesVerzameling != null)
+        {
+
+            <form name="Index" asp-controller="Home" asp-action="Index" id="formmaterial">
+
+                <div>
+
+                    <label asp-for="SelectedMaterial"></label>
+
+                    <select name="SelectedMaterial" asp-for="Materials" onchange="Changeselection()"
+                            asp-items="@(new SelectList(Model.Materials, "LogicalIndex", "Name"))">
+                        <option value="">-- Pick a Material --</option>
+                    </select>
+                    <span asp-validation-for="SelectedMaterial" class="text-danger"></span>
+                </div>
+
+                <button type="submit" value="Index">ChangeMaterial</button>
+            </form>
+        }
+
+        @if (Model.gltf.Materials != null)
+        {
+
+            <form name="Index" asp-controller="Home" asp-action="Index" id="formmaterial">
+
+                <div>
+
+                    <label asp-for="SelectedMaterial"></label>
+
+                    <select name="SelectedMaterial" asp-for="Materials" onchange="Changeselection()"
+                            asp-items="@(new SelectList(Model.Materials, "LogicalIndex", "Name"))">
+                        <option value="">-- Pick a Material --</option>
+                    </select>
+                    <span asp-validation-for="SelectedMaterial" class="text-danger"></span>
+                </div>
+
+                <button type="submit" value="Index">ChangeMaterial</button>
+            </form>
+        }
+
+        @if (Model.gltf. != null)
+        {
+
+            <form name="Index" asp-controller="Home" asp-action="Index" id="formmaterial">
+
+                <div>
+
+                    <label asp-for="SelectedMaterial"></label>
+
+                    <select name="SelectedMaterial" asp-for="Materials" onchange="Changeselection()"
                             asp-items="@(new SelectList(Model.Materials, "LogicalIndex", "Name"))">
                         <option value="">-- Pick a Material --</option>
                     </select>
@@ -95,3 +155,7 @@
 
 
 <script src="~/js/3DConfigurator/SceneCreator.js"></script>
+<script>
+    function Changeselection() { document.getElementById("formmaterial").submit();}
+
+</script>*@
