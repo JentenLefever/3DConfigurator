@@ -1,4 +1,6 @@
 ﻿using _3DConfigurator.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -9,7 +11,24 @@ namespace _3DConfigurator.Services
     public class EditGltfService : IEditGltfService
     {
 
+        private readonly IHostingEnvironment _env;
 
+        public EditGltfService(IHostingEnvironment env)
+        {
+            _env = env;
+           ;
+        }
+
+        public void UploadGLTFModel(IFormFile NewModel)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Objects", "Current.glb");
+            var filestream = new FileStream(filePath, FileMode.Create);
+            NewModel.CopyTo(filestream);
+            filestream.Dispose();
+
+
+
+        }
         //Create GltfModel
         public GltfModel PopulateGltfModel(string objectAdres)
         {
@@ -28,21 +47,20 @@ namespace _3DConfigurator.Services
                 Meshes mesh = new Meshes();
                 mesh.Mesh = item;
                 meshesInGltf.Add(mesh);
-                gltfModel.MeshesVerzameling = meshesInGltf;
+                
 
                 foreach (var prim in item.Primitives)
                 {
                     Materials material = new Materials();
                     material.Material = prim.Material;
                     materialsInMesh.Add(material);
-                    mesh.Materials = materialsInMesh;
+                    
                     foreach (var chan in prim.Material.Channels)
                     {
                         Channels channel = new Channels();
                         channel.Channel = chan;
                         channelInMaterials.Add(channel);
-                        material.Channels = channelInMaterials;
-
+                        
                         Textures texture = new Textures();
                         texture.Texture = chan.Texture;
                         //if (chan.Texture.Image !=null)
@@ -50,10 +68,13 @@ namespace _3DConfigurator.Services
                         //    texture.Texture.Image = chan.Texture.Image;
                         //    texture.Texture.Name = chan.Texture.Name;
                         //}
-
                     }
+                    material.Channels = channelInMaterials;
                 }
+                mesh.Materials = materialsInMesh;
             }
+gltfModel.MeshesVerzameling = meshesInGltf;
+
             return gltfModel;
         }
 
@@ -64,7 +85,7 @@ namespace _3DConfigurator.Services
             foreach (var item in gltfModel.gltf.LogicalImages)
             {
                 var img = Bitmap.FromStream(item.OpenImageFile());
-                img.Save("Texture" + i + ".png", ImageFormat.Png);
+                img.Save("wwwwroot/Textures/Texture" + i + ".png", ImageFormat.Png);
                 i++;
             }
             return channelImages;
@@ -78,12 +99,12 @@ namespace _3DConfigurator.Services
             return texture;
         }
 
-        public SharpGLTF.Schema2.Image ReadImage(string imagePath)
+        public SharpGLTF.Schema2.Image ReadImage(string imagePath,GltfModel gltfModel,string imageName)
             {
-            var image = texture.Texture.LogicalParent.CreateImage(name);
-            image.SetSatelliteFile(newTexturePath);
+            var image = gltfModel.gltf.CreateImage(imageName);
             
-
+            image.SetSatelliteFile(imagePath);
+            return image;
         }
 
         public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres)
@@ -91,20 +112,39 @@ namespace _3DConfigurator.Services
             gltfmodel.gltf.SaveGLB(saveAdres);
         }
 
-        public Materials newMaterialToMesh(Meshes meshes, string materialName)
+        public Materials AddNewMaterialtoGLTFWithTextures(GltfModel gltfmodel, string materialName)
         {
             Materials newmaterial = new Materials();
-            newmaterial.Material = meshes.Mesh.LogicalParent.CreateMaterial(materialName);
-            var index = newmaterial.Material.LogicalIndex;
+            newmaterial.Material = gltfmodel.gltf.CreateMaterial(materialName);
+            var i = 0;
             foreach (var item in newmaterial.Material.Channels)
             {
                 Textures newMaterialTexture = new Textures();
-                newMaterialTexture.Image = 
+                newMaterialTexture.Image = ReadImage("wwwwroot/Textures/Texture" + i + ".png", gltfmodel,item.Key);
+                item.Texture.Image = newMaterialTexture.Image;
+                i++;
             }
-            meshes.Mesh.Primitives[0].Material = newmaterial.Material;
             return newmaterial;
+        }
+        public void AddUploadedImageToSelectedTexture(SharpGLTF.Schema2.Texture texture,IFormFile NewTexture)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Textures", "NewTexture.png");
+            var filestream = new FileStream(filePath, FileMode.Create);
+            NewTexture.CopyTo(filestream);
+            filestream.Dispose();
+            var image = texture.LogicalParent.CreateImage(NewTexture.FileName);
+            image.SetSatelliteFile(filePath);
+
+            texture.Image = image;
+            texture.LogicalParent.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
         }
 
 
+        public void LoadImageFromTexture(SharpGLTF.Schema2.Texture texture)
+        {
+            var image = Bitmap.FromStream(texture.Image.OpenImageFile());
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Textures", "SelectedImage.png");
+            image.Save(filePath);
+        }
     }
 }

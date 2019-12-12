@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using _3DConfigurator.Models;
+﻿using _3DConfigurator.Models;
 using _3DConfigurator.Services;
 using _3DConfigurator.ViewModel;
-using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace _3DConfigurator.Controllers
 {
@@ -17,7 +17,7 @@ namespace _3DConfigurator.Controllers
     {
         private readonly IHostingEnvironment _env;
         private readonly ILogger<HomeController> _logger;
-        
+
         IEnumerable<SharpGLTF.Schema2.Material> materialsObject;
 
         public HomeController(ILogger<HomeController> logger, IHostingEnvironment env)
@@ -26,19 +26,20 @@ namespace _3DConfigurator.Controllers
             _logger = logger;
         }
 
-       
-
+        //Get Index Page
         public IActionResult Index()
         {
-            GltfService gltfService = new GltfService();
-            Gltf gltf = new Gltf();
-            var LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
-            gltf = gltfService.GltfInfo(LoadPath);
+            EditGltfService gltfService = new EditGltfService(_env);
+            GltfModel gltfModel = new GltfModel();
+
+            //model populaten met ingeladen gltf
+            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {
-                Materials = gltf.Materials,
+                GltfModel = Currentmodel
             };
+
 
             return View(indexViewModel);
         }
@@ -54,83 +55,64 @@ namespace _3DConfigurator.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        string fileName;
-        // POST: Admin/Projects/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel Uploadgltf)
+        public async Task<IActionResult> Index(IndexViewModel indexPostVM)
         {
-            if (Uploadgltf.SelectedMaterial == null)
+            EditGltfService editGltfService = new EditGltfService(_env);
+            IndexViewModel indexViewModel = new IndexViewModel();
+
+            //uploaden van nieuwe gltf
+            if (indexPostVM.GltfUpload != null)
             {
-                //Toevoegen van Object in de wwwroot.
+                editGltfService.UploadGLTFModel(indexPostVM.GltfUpload);
+                var currentModel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+                indexViewModel.GltfModel = currentModel;
+                return View(indexViewModel);
+            }
 
-                foreach (var item in Uploadgltf.GltfUpload)
+            var Currentmodel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+
+            //Show Materials in Mesh
+            if (indexPostVM.SelectedMeshIndex != null && indexPostVM.SelectedMaterialIndex == -1)
+            {
+                indexViewModel.SelectedMesh = Currentmodel.MeshesVerzameling.ToList()[indexPostVM.SelectedMeshIndex];
+                indexViewModel.GltfModel = Currentmodel;
+                indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
+                return View(indexViewModel);
+            }
+
+            //Show Channels in Material
+            if (indexPostVM.SelectedMeshIndex != null && indexPostVM.SelectedMaterialIndex != null && indexPostVM.SelectedChannelIndex == -1)
+            {
+                indexViewModel.SelectedMaterial = Currentmodel.gltf.LogicalMaterials.ToList()[indexPostVM.SelectedMeshIndex];
+                indexViewModel.GltfModel = Currentmodel;
+                indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
+                return View(indexViewModel);
+            }
+
+            //Show/edit Textures
+            if (indexPostVM.SelectedChannelIndex != -1)
+            {
+                List<SharpGLTF.Schema2.MaterialChannel> channellist = new List<SharpGLTF.Schema2.MaterialChannel>();
+                foreach (var item in Currentmodel.gltf.LogicalMaterials.ToList()[indexPostVM.SelectedMeshIndex].Channels)
                 {
-                    fileName = Path.GetFileName(item.FileName);
-                    var savepath = Path.Combine(_env.WebRootPath, "Objects", fileName);
-
-                    using (var stream = new FileStream(savepath, FileMode.Create))
-                    {
-                        await item.CopyToAsync(stream);
-                    }
-
+                    channellist.Add(item);
+                };
+                indexViewModel.SelectedTexture = channellist[Convert.ToInt32(indexPostVM.SelectedChannelIndex)].Texture;
+                editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
+                indexViewModel.GltfModel = Currentmodel;
+                indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
+                indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
+                if (indexPostVM.NewtextureUpload != null)
+                {
+                    editGltfService.AddUploadedImageToSelectedTexture(indexViewModel.SelectedTexture, indexPostVM.NewtextureUpload);
+                    return View(indexViewModel);
                 }
-
-                GltfService gltfService = new GltfService();
-                Gltf gltf = new Gltf();
-                var LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
-                gltf = gltfService.GltfInfo("wwwroot/Objects/" + fileName, LoadPath);
-                IndexViewModel indexViewModel = new IndexViewModel()
-                {
-                    GltfFile = SharpGLTF.Schema2.ModelRoot.Load(LoadPath),
-                    Name = fileName,
-                    Animations = gltf.Animations,
-                    Materials = gltf.Materials,
-                    Meshes = gltf.Meshes,
-                    Scenes = gltf.Scenes
-
-                };
-
-
-                return View(indexViewModel);
             }
 
-            else
-            {
-                GltfService gltfService = new GltfService();
-                Gltf gltf = new Gltf();
-                var LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Current.glb");
-                gltf = gltfService.GltfInfo(LoadPath);
-                SharpGLTF.Schema2.Material selectedMaterial = gltf.Materials.ToList()[Convert.ToInt32(Uploadgltf.SelectedMaterial)];
-                
-                IndexViewModel indexViewModel = new IndexViewModel()
-                {
-                    GltfFile = SharpGLTF.Schema2.ModelRoot.Load(LoadPath),
-                    Name = fileName,
-                    Animations = gltf.Animations,
-                    Materials = gltf.Materials,
-                    Meshes = gltf.Meshes,
-                    Scenes = gltf.Scenes,
-                    SelectedMaterialfull = selectedMaterial
-                };
-                
-                LoadPath = Path.Combine(_env.WebRootPath, "Objects", "Cube.glb");
-                var previewcube = SharpGLTF.Schema2.ModelRoot.Load(LoadPath);
-                
-
-
-
-                return View(indexViewModel);
-
-
-            }
-            
-
-           
+            return View(indexViewModel);
         }
 
-       
     }
 }

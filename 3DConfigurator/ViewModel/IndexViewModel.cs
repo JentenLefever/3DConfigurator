@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using _3DConfigurator.Models;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +11,21 @@ namespace _3DConfigurator.ViewModel
     {
         public string Name { get; set; }
 
-        public SharpGLTF.Schema2.ModelRoot GltfFile { get; set; }
-        public IEnumerable<SharpGLTF.Schema2.Scene> Scenes { get; set; }
-        public IEnumerable<SharpGLTF.Schema2.Mesh> Meshes { get; set; }
-        public IEnumerable<SharpGLTF.Schema2.Material> Materials { get; set; }
-        public IEnumerable<SharpGLTF.Schema2.Animation> Animations { get; set; }
+        public GltfModel GltfModel { get; set; }
+        public IFormFile GltfUpload { get; set; }
+        public int  SelectedMeshIndex { get; set; }
 
-        public List<IFormFile> GltfUpload { get; set; }
+        public Meshes SelectedMesh { get; set; }
+        public int SelectedMaterialIndex { get; set; }
 
-        public SharpGLTF.Schema2.Material SelectedMaterialfull { get; set; }
-        public long? SelectedMaterial { get; set; }
+        
 
-        public SharpGLTF.Schema2.Material[] AllMaterials { get; set; }
+        public SharpGLTF.Schema2.Material SelectedMaterial { get; set; }
+        public SharpGLTF.Schema2.Texture SelectedTexture { get; set; }
+        public int SelectedChannelIndex { get; set; }
+
+        public IFormFile NewtextureUpload { get; set; }
+
     }
 
 }

@@ -1,0 +1,19 @@
+﻿@model _3DConfigurator.ViewModel.IndexViewModel
+
+<form name="MeshForm" asp-controller="Home" asp-action="Index" id="formselectmesh">
+
+    <div>
+
+
+        <label asp-for="SelectedMaterial"></label>
+
+        <select id="meshSelect" runat="server" name="SelectedMesh" asp-for="SelectedMaterial" onchange="ChangeMeshSelect()">
+            @foreach (var item in Model.GltfModel.MeshesVerzameling)
+            {
+                <option value="@Convert.ToInt32(item.Mesh.LogicalIndex)">@item.Mesh.Name</option>
+            }
+        </select>
+
+        <span asp-validation-for="SelectedMaterial" class="text-danger"></span>
+    </div>
+</form>

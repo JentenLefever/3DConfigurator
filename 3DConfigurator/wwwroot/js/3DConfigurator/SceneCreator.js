@@ -1,16 +1,22 @@
 ﻿
+//Scene aanmaken
 var scene = new THREE.Scene();
+//backgroundcolor
 scene.background = new THREE.Color(0xc9c9c9);
-var objectpreview = document.getElementById("materialpreview");
 
+
+//Create renderer
 var renderer = new THREE.WebGLRenderer();
 renderer.gammaOutput = true;
-renderer.gammaFactor = 2.2;
 
+//Renderer Size
+var objectpreview = document.getElementById("materialpreview");
 var width = objectpreview.clientWidth;
 var height = objectpreview.clientHeight;
 renderer.setSize(width, height);
-var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+
+
+//Add render to materialpreview
 
 objectpreview.appendChild(renderer.domElement);
 
@@ -26,67 +32,72 @@ window.addEventListener('resize', function () {
     camera.updateProjectionMatrix();
 });
 
-controls = new THREE.OrbitControls(camera, renderer.domElement);
+////Controls
+//controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+//Load object in Scene
 var loader = new THREE.GLTFLoader();
-
-
-
 loader.load(
     // resource URL
     'wwwroot/Objects/Current.glb',
     // called when resource is loaded
     function (gltf) {
-
         scene.add(gltf.scene);
-
         gltf.animations; // Array<THREE.AnimationClip>
         gltf.scene; // THREE.Scene
         gltf.scenes; // Array<THREE.Scene>
         gltf.cameras; // Array<THREE.Camera>
         gltf.asset; // Object
-          
     });
 
+//Add camera
+var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
 
+//Add light
 var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 scene.add(directionalLight);
 
+//Add hdri
+var hdrUrls = ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'];
+hdrCubeMap = new HDRCubeTextureLoader()
+    .setPath('wwwroot/Textures/pisaHDR/')
+    .setDataType(THREE.UnsignedByteType)
+    .load(hdrUrls, function () {
 
+        var pmremGenerator = new PMREMGenerator(hdrCubeMap);
+        pmremGenerator.update(renderer);
 
-//Create the shape
-var geometry = new THREE.BoxGeometry(1, 1, 1);
+        var pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods);
+        pmremCubeUVPacker.update(renderer);
 
-// Create Material
-var material = new THREE.MeshBasicMaterial({ color: 0xFF0000, wireframe: false });
-var cube = new THREE.Mesh(geometry, material);
+        hdrCubeRenderTarget = pmremCubeUVPacker.CubeUVRenderTarget;
 
+        hdrCubeMap.magFilter = THREE.LinearFilter;
+        hdrCubeMap.needsUpdate = true;
 
-//scene.add(cube);
-camera.position.z = 3;
+        pmremGenerator.dispose();
+        pmremCubeUVPacker.dispose();
 
+    });
 
 //logic
 var update = function () {
-
-    //cube.rotation.x +=0.01
-    //cube.rotation.y +=0.005
+ 
 };
 
 //Draw  scene
 var render = function () {
+    
+    var renderTarget, cubeMap;
+    renderTarget = hdrCubeRenderTarget;
+    cubeMap = hdrCubeMap;
     renderer.render(scene, camera);
-
-
 };
 
 //run game loop(update, render , repeat)
 var GameLoop = function () {
-
     requestAnimationFrame(GameLoop);
-
     update();
-
     render();
 };
 

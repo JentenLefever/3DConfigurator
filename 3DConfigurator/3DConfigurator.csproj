@@ -24,6 +24,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="3.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.0.1">
       <PrivateAssets>all</PrivateAssets>
@@ -43,6 +44,12 @@
 
   <ItemGroup>
     <None Include="wwwroot\model\01_textured_sphere.gltf" />
+    <None Include="wwwroot\Textures\pisaHDR\nx.hdr" />
+    <None Include="wwwroot\Textures\pisaHDR\ny.hdr" />
+    <None Include="wwwroot\Textures\pisaHDR\nz.hdr" />
+    <None Include="wwwroot\Textures\pisaHDR\px.hdr" />
+    <None Include="wwwroot\Textures\pisaHDR\py.hdr" />
+    <None Include="wwwroot\Textures\pisaHDR\pz.hdr" />
   </ItemGroup>
 
 
