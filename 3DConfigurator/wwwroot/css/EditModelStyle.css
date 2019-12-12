@@ -1,0 +1,33 @@
+﻿body {
+    height:100%;
+}
+
+.ModelCanvas {
+    width: 100%;
+    height:100%;
+    background-color: lightgrey;
+    position: absolute;
+
+}
+
+.ModelOptionsContainer {
+    width: 25%;
+    float: right;
+    background-color: lightslategrey;
+    position: absolute;
+    right: 5px;
+}
+
+.ShowHideButton {
+    height:50px;
+    width:100%;
+    
+
+}
+
+.ModelOptions {
+visibility:visible;
+height:500px;
+background-color:red;
+}
+

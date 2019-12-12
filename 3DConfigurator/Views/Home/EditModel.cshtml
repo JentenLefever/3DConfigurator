@@ -1,0 +1,44 @@
+﻿
+@{
+    ViewData["Title"] = "EditModel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/EditModelStyle.css" rel="stylesheet" />
+<partial name="_AddScripts" />
+
+<canvas id="ModelCanvas" class="ModelCanvas">
+</canvas>
+<div id=" ModelOptionsContainer" class="ModelOptionsContainer">
+    <button onclick="ShowHideOptions()" class="ShowHideButton">Show/hide</button>
+    <div id="ModelOptions" class="ModelOptions">
+        <button onclick="RemoveObject()"></button>
+        <div class="UploadNewModel">
+            <partial name="_UploadModel" />
+        </div>
+        <div class="SelectType">
+            <partial name="_SelectModel" />
+        </div>
+        <div class="ShowEditTexture">
+            <partial name="_ShowEditTexture" />
+        </div>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    var modelOptions = document.getElementById('ModelOptions')
+
+
+    function ShowHideOptions() {
+
+        if (modelOptions.style.visibility == 'hidden') {
+            modelOptions.style.visibility = 'visible';
+            modelOptions.style.height = '500px';
+        }
+        else {
+            modelOptions.style.visibility = 'hidden';
+            modelOptions.style.height = '0px';
+        }
+    }
+
+</script>

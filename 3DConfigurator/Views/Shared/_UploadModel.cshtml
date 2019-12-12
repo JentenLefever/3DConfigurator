@@ -1,0 +1,16 @@
+﻿
+@model _3DConfigurator.ViewModel.IndexViewModel
+
+
+<form asp-action="Index" enctype="multipart/form-data" method="post">
+    <dl>
+        <dt>
+            <label asp-for="GltfUpload"></label>
+        </dt>
+        <dd>
+            <input asp-for="GltfUpload" type="file">
+            <span asp-validation-for="GltfUpload"></span>
+        </dd>
+    </dl>
+    <button type="submit" value="Create">Add gltf</button>
+</form>

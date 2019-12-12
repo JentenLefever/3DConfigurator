@@ -114,5 +114,10 @@ namespace _3DConfigurator.Controllers
             return View(indexViewModel);
         }
 
+        public IActionResult EditModel()
+        {
+            return View();
+        }
+
     }
 }
