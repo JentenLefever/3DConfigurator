@@ -1,0 +1,26 @@
+﻿@model _3DConfigurator.ViewModel.IndexViewModel
+@if (Model.status == "EditTexture")
+{
+
+    
+
+    
+    <p>selected mes : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Name</p>
+    <p>selected material : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Primitives[Model.SelectedMaterialIndex].Material.Name</p>
+    <p>selected material : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Primitives[Model.SelectedMaterialIndex].Material.Channels.ToList()[Model.SelectedChannelIndex].Key</p>
+    <img src="~/Textures/SelectedImage.Png" height="200px" />
+    <form asp-action="Index" enctype="multipart/form-data" method="post">
+        <dl>
+            <dd>
+                <div class="custom-file">
+                    <input type="file"  asp-for="NewtextureUpload" class="custom-file-input" id="inputGroupFile01"
+                           aria-describedby="inputGroupFileAddon01" asp-for="GltfUpload" type="file">
+                    <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+                </div>
+            </dd>
+        </dl>
+        <input type="hidden" value="@Model.SelectedChannelIndex" asp-for="SelectedChannelIndex" />
+        <input type="hidden" value="EditTexture" asp-for="status" />
+        <button class="btn btn-info" type="submit" value="Create">Change Texture</button>
+    </form>
+}

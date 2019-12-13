@@ -37,6 +37,7 @@ namespace _3DConfigurator.Controllers
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {
+                status = "SelectMesh",
                 GltfModel = Currentmodel
             };
 
@@ -67,32 +68,39 @@ namespace _3DConfigurator.Controllers
             {
                 editGltfService.UploadGLTFModel(indexPostVM.GltfUpload);
                 var currentModel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+                indexViewModel.status = "SelectMesh";
                 indexViewModel.GltfModel = currentModel;
+                
                 return View(indexViewModel);
             }
 
             var Currentmodel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
 
             //Show Materials in Mesh
-            if (indexPostVM.SelectedMeshIndex != null && indexPostVM.SelectedMaterialIndex == -1)
+            if (indexPostVM.status == "SelectMaterial")
             {
                 indexViewModel.SelectedMesh = Currentmodel.MeshesVerzameling.ToList()[indexPostVM.SelectedMeshIndex];
                 indexViewModel.GltfModel = Currentmodel;
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
+                indexViewModel.status = "SelectMaterial";
+                indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
                 return View(indexViewModel);
+                
             }
 
             //Show Channels in Material
-            if (indexPostVM.SelectedMeshIndex != null && indexPostVM.SelectedMaterialIndex != null && indexPostVM.SelectedChannelIndex == -1)
+            if (indexPostVM.status == "SelectChannel")
             {
                 indexViewModel.SelectedMaterial = Currentmodel.gltf.LogicalMaterials.ToList()[indexPostVM.SelectedMeshIndex];
                 indexViewModel.GltfModel = Currentmodel;
                 indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
+                indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
+                indexViewModel.status = "SelectChannel";
                 return View(indexViewModel);
             }
 
             //Show/edit Textures
-            if (indexPostVM.SelectedChannelIndex != -1)
+            if (indexPostVM.status == "EditTexture")
             {
                 List<SharpGLTF.Schema2.MaterialChannel> channellist = new List<SharpGLTF.Schema2.MaterialChannel>();
                 foreach (var item in Currentmodel.gltf.LogicalMaterials.ToList()[indexPostVM.SelectedMeshIndex].Channels)
@@ -104,10 +112,14 @@ namespace _3DConfigurator.Controllers
                 indexViewModel.GltfModel = Currentmodel;
                 indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
+                indexViewModel.SelectedChannelIndex = indexPostVM.SelectedChannelIndex;
+                indexViewModel.status = "EditTexture";
                 if (indexPostVM.NewtextureUpload != null)
                 {
                     editGltfService.AddUploadedImageToSelectedTexture(indexViewModel.SelectedTexture, indexPostVM.NewtextureUpload);
+                    editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
                     return View(indexViewModel);
+                    
                 }
             }
 
@@ -116,7 +128,19 @@ namespace _3DConfigurator.Controllers
 
         public IActionResult EditModel()
         {
-            return View();
+            EditGltfService gltfService = new EditGltfService(_env);
+            GltfModel gltfModel = new GltfModel();
+
+            //model populaten met ingeladen gltf
+            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+
+            IndexViewModel indexViewModel = new IndexViewModel()
+            {
+                GltfModel = Currentmodel
+            };
+
+
+            return View(indexViewModel);
         }
 
     }

@@ -5,12 +5,15 @@
 <form asp-action="Index" enctype="multipart/form-data" method="post">
     <dl>
         <dt>
-            <label asp-for="GltfUpload"></label>
+            Add New Model
         </dt>
         <dd>
-            <input asp-for="GltfUpload" type="file">
-            <span asp-validation-for="GltfUpload"></span>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01"
+                       aria-describedby="inputGroupFileAddon01"  asp-for="GltfUpload" type="file">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
         </dd>
     </dl>
-    <button type="submit" value="Create">Add gltf</button>
+    <button class="btn btn-info" type="submit" value="Create">Add uploaded model</button>
 </form>

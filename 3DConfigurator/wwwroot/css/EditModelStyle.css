@@ -4,7 +4,7 @@
 
 .ModelCanvas {
     width: 100%;
-    height:100%;
+    height:80%;
     background-color: lightgrey;
     position: absolute;
 
@@ -16,6 +16,7 @@
     background-color: lightslategrey;
     position: absolute;
     right: 5px;
+    
 }
 
 .ShowHideButton {
@@ -26,8 +27,20 @@
 }
 
 .ModelOptions {
-visibility:visible;
-height:500px;
-background-color:red;
+    visibility: visible;
+    height: 500px;
+    background-color: grey;
+    padding: 15px;
+    overflow:auto;
+}
+
+.UploadNewModel {
+    margin-top:10px;
+
+}
+
+.SelectType{
+
+margin-top:15px;
 }
 

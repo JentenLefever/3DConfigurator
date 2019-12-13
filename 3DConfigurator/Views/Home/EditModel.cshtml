@@ -4,14 +4,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <link href="~/css/EditModelStyle.css" rel="stylesheet" />
-<partial name="_AddScripts" />
+
 
 <canvas id="ModelCanvas" class="ModelCanvas">
 </canvas>
 <div id=" ModelOptionsContainer" class="ModelOptionsContainer">
-    <button onclick="ShowHideOptions()" class="ShowHideButton">Show/hide</button>
+    <button onclick="ShowHideOptions()" class="btn ShowHideButton">Show/hide</button>
     <div id="ModelOptions" class="ModelOptions">
-        <button onclick="RemoveObject()"></button>
+        <button class="btn btn-info" onclick="RemoveObject()"> Start with clean object</button>
         <div class="UploadNewModel">
             <partial name="_UploadModel" />
         </div>
@@ -25,6 +25,8 @@
 
 </div>
 
+<partial name="_AddScripts" />
+<script src="~/js/3DConfigurator/SceneCreator.js"></script>
 <script type="text/javascript">
     var modelOptions = document.getElementById('ModelOptions')
 

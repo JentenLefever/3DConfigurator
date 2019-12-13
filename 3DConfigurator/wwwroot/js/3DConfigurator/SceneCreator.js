@@ -1,108 +1,96 @@
 ﻿
-//Scene aanmaken
-var scene = new THREE.Scene();
-//backgroundcolor
-scene.background = new THREE.Color(0xc9c9c9);
+//Renderer
 
-
-//Create renderer
-var renderer = new THREE.WebGLRenderer();
+var renderer = new THREE.WebGLRenderer({ div: document.getElementById('ModelCanvas'), antalias: true });
+var modelRenderer = document.getElementById('ModelCanvas');
+renderer.setClearColor(0x00ff00);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setSize(modelRenderer.clientWidth, modelRenderer.clientHeight);
 renderer.gammaOutput = true;
+modelRenderer.appendChild(renderer.domElement);
 
-//Renderer Size
-var objectpreview = document.getElementById("materialpreview");
-var width = objectpreview.clientWidth;
-var height = objectpreview.clientHeight;
-renderer.setSize(width, height);
+//Camera
+var camera = new THREE.PerspectiveCamera(45, modelRenderer.clientWidth / modelRenderer.clientHeight, 0.25, 20);
+camera.position.set(0, 0.9, 8);
 
+//scene
+var scene = new THREE.Scene();
 
-//Add render to materialpreview
+//Controls
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-objectpreview.appendChild(renderer.domElement);
+//controls.update() must be called after any manual changes to the camera's transform
 
+controls.update();
 
-
-//resize window
-window.addEventListener('resize', function () {
-
-    var width = objectpreview.clientWidth;
-    var height = objectpreview.clientHeight;
-    renderer.setSize(width, height);
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
-});
-
-////Controls
-//controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-//Load object in Scene
-var loader = new THREE.GLTFLoader();
-loader.load(
-    // resource URL
-    'wwwroot/Objects/Current.glb',
-    // called when resource is loaded
-    function (gltf) {
-        scene.add(gltf.scene);
-        gltf.animations; // Array<THREE.AnimationClip>
-        gltf.scene; // THREE.Scene
-        gltf.scenes; // Array<THREE.Scene>
-        gltf.cameras; // Array<THREE.Camera>
-        gltf.asset; // Object
-    });
-
-//Add camera
-var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-
-//Add light
-var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-scene.add(directionalLight);
-
-//Add hdri
-var hdrUrls = ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'];
-hdrCubeMap = new HDRCubeTextureLoader()
-    .setPath('wwwroot/Textures/pisaHDR/')
+//object
+new THREE.RGBELoader()
     .setDataType(THREE.UnsignedByteType)
-    .load(hdrUrls, function () {
+    .setPath('wwwroot/Textures/')
+    .load('pedestrian_overpass_2k.hdr', function (texture) {
 
-        var pmremGenerator = new PMREMGenerator(hdrCubeMap);
+        var options = {
+            minFilter: texture.minFilter,
+            magFilter: texture.magFilter
+        };
+
+        scene.background = new THREE.WebGLRenderTargetCube(1024, 1024, options).fromEquirectangularTexture(renderer, texture);
+
+        var pmremGenerator = new THREE.PMREMGenerator(scene.background.texture);
         pmremGenerator.update(renderer);
 
-        var pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods);
+        var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods);
         pmremCubeUVPacker.update(renderer);
 
-        hdrCubeRenderTarget = pmremCubeUVPacker.CubeUVRenderTarget;
+        var envMap = pmremCubeUVPacker.CubeUVRenderTarget.texture;
 
-        hdrCubeMap.magFilter = THREE.LinearFilter;
-        hdrCubeMap.needsUpdate = true;
+        // model
+                
+        var loader = new THREE.GLTFLoader().setPath('wwwroot/Objects/');
+        loader.load('Current.glb', function (gltf) {
+
+            gltf.scene.traverse(function (child) {
+
+                if (child.isMesh) {
+
+                    child.material.envMap = envMap;
+
+                }
+
+            });
+
+            scene.add(gltf.scene);
+
+        });
 
         pmremGenerator.dispose();
         pmremCubeUVPacker.dispose();
 
     });
 
-//logic
-var update = function () {
- 
-};
 
-//Draw  scene
-var render = function () {
+requestAnimationFrame(render);
+
+//light
+var light = new THREE.AmbientLight(0xffffff, 0.8);
+
+scene.add(light);
+
+
+
+
+function render() {
     
-    var renderTarget, cubeMap;
-    renderTarget = hdrCubeRenderTarget;
-    cubeMap = hdrCubeMap;
     renderer.render(scene, camera);
-};
+    requestAnimationFrame(render);
+}
 
-//run game loop(update, render , repeat)
-var GameLoop = function () {
-    requestAnimationFrame(GameLoop);
-    update();
-    render();
-};
+window.addEventListener('resize', onWindowResize, false);
+function onWindowResize() {
 
-GameLoop();
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
 
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-
-
+}

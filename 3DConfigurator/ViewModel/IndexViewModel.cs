@@ -17,8 +17,8 @@ namespace _3DConfigurator.ViewModel
 
         public Meshes SelectedMesh { get; set; }
         public int SelectedMaterialIndex { get; set; }
-
         
+        public string status { get; set; }
 
         public SharpGLTF.Schema2.Material SelectedMaterial { get; set; }
         public SharpGLTF.Schema2.Texture SelectedTexture { get; set; }

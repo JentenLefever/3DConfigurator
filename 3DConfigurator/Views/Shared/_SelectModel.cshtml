@@ -1,0 +1,68 @@
+﻿@model _3DConfigurator.ViewModel.IndexViewModel
+
+@{int teller = 0;
+}
+
+@if (Model.status == "SelectMesh")
+{
+
+    <form class="form-group"  asp-controller="Home" asp-action="Index">
+         <div>
+            <select class="form-control" asp-for="SelectedMeshIndex">
+                @foreach (var item in Model.GltfModel.MeshesVerzameling)
+                {
+                    <option value="@item.Mesh.LogicalIndex">@item.Mesh.Name</option>
+                }
+            </select>
+            <input type="hidden" value="SelectMaterial" asp-for="status" />
+            <button class="btn btn-info" onclick="submit">Select Mesh</button>
+        </div>
+    </form>
+}
+
+
+@if (Model.status == "SelectMaterial")
+{
+    <p>selected mes : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Name</p>
+    <form class="form-group"  asp-controller="Home" asp-action="Index">
+        <div>
+            <select class="form-control" id="materialSelect" runat="server" name="SelectedMaterial" asp-for="SelectedMaterialIndex" onchange="ChangeMeshSelect()">
+                @foreach (var item in  @Model.SelectedMesh.Mesh.Primitives)
+                {
+                    <option value="@Convert.ToInt32(item.Material.LogicalIndex)">@item.Material.Name</option>
+                }
+            </select>
+            <input type="hidden" value="@Model.SelectedMeshIndex" asp-for="SelectedMeshIndex" />
+            <input type="hidden" value="@Model.SelectedMaterialIndex" asp-for="SelectedMaterialIndex" />
+
+            <input type="hidden" value="SelectChannel" asp-for="status" />
+            <button class="btn btn-info" onclick="submit">Select Material</button>
+        </div>
+    </form>
+}
+
+@if (Model.status == "SelectChannel")
+{
+    <p>selected mes : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Name</p>
+    <p>selected material : @Model.GltfModel.gltf.LogicalMeshes[Model.SelectedMeshIndex].Primitives[Model.SelectedMaterialIndex].Material.Name</p>
+    <form class="form-group" class="form-control" name="ChannelForm" asp-controller="Home" asp-action="Index" id="formselectChannel">
+
+        <div>
+            <label asp-for="SelectedChannelIndex"></label>
+            <select class="form-control" id="ChannelSelect" runat="server" name="SelectedChannelIndex" asp-for="SelectedChannelIndex" onchange="ChangeMeshSelect()">
+
+                @foreach (var item in Model.SelectedMaterial.Channels)
+                {
+
+                    <option value="@teller">@item.Key</option>
+                    teller++;
+                }
+            </select>
+        </div>
+        <input type="hidden" value="@Model.SelectedMeshIndex" asp-for="SelectedMeshIndex" />
+        <input type="hidden" value="@Model.SelectedMaterialIndex" asp-for="SelectedMaterialIndex" />
+        <input type="hidden" value="EditTexture" asp-for="status" />
+
+        <button class="btn btn-info" onclick="submit">Select Channel</button>
+    </form>
+}

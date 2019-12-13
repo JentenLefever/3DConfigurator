@@ -1,0 +1,270 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+}
+
+@model _3DConfigurator.ViewModel.IndexViewModel
+
+
+<script src="~/js/three/three.js"></script>
+<script src="~/js/three/OrbitControls.js"></script>
+<script src="~/js/three/GLTFLoader.js"></script>
+<script src="~/js/three/OBJLoader.js"></script>
+<script src="~/js/three/HDRCubeTextureLoader.js"></script>
+<script src="~/js/three/PMREMCubeUVPacker.js"></script>
+<script src="~/js/three/PMREMGenerator.js"></script>
+
+@{int teller = 0;
+}
+<div class="ConfiguratieOptions">
+    <div class="split left" id="ConfigurationLeft">
+        <h1>load test</h1>
+        <h1>@Model.GltfModel.Name</h1>
+        <form asp-action="Index" enctype="multipart/form-data" method="post">
+            <dl>
+                <dt>
+                    <label asp-for="GltfUpload"></label>
+                </dt>
+                <dd>
+                    <input asp-for="GltfUpload" type="file">
+                    <span asp-validation-for="GltfUpload"></span>
+                </dd>
+            </dl>
+            <input asp-page-handler="Upload" class="btn" type="submit" value="Upload" />
+            <button type="submit" value="Create">Add gltf</button>
+        </form>
+
+        @if (Model.GltfModel.MeshesVerzameling != null)
+        {
+
+            <form name="MeshForm" asp-controller="Home" asp-action="Index" id="formselectmesh">
+
+                <div>
+                    <label asp-for="SelectedMeshIndex"></label>
+
+                    <select id="meshSelect" runat="server" name="SelectedMesh" asp-for="SelectedMeshIndex" onchange="ChangeMeshSelect()">
+                        @foreach (var item in Model.GltfModel.MeshesVerzameling)
+                        {
+                            <option value="@Convert.ToInt32(item.Mesh.LogicalIndex)">@item.Mesh.Name</option>
+                        }
+                    </select>
+                    <input type="hidden" value="-1" asp-for="SelectedMaterialIndex" />
+
+                    <button onclick="submit">Select Mesh</button>
+                </div>
+            </form>
+        }
+
+
+        @if (Model.SelectedMesh != null)
+        {
+            <p>selected mes : @Model.SelectedMesh.Mesh.Name</p>
+            <form name="MaterialForm" asp-controller="Home" asp-action="Index" id="formselectmaterial">
+                <div>
+
+                    <label asp-for="SelectedMaterialIndex"></label>
+
+                    <select id="materialSelect" runat="server" name="SelectedMaterial" asp-for="SelectedMaterialIndex" onchange="ChangeMeshSelect()">
+                        @foreach (var item in Model.SelectedMesh.Materials)
+                        {
+                            <option value="@Convert.ToInt32(item.Material.LogicalIndex)">@item.Material.Name</option>
+                        }
+                    </select>
+                    <input type="hidden" value="-1" asp-for="SelectedChannelIndex" />
+
+                    <button onclick="submit">Select Material</button>
+                </div>
+            </form>
+        }
+
+        @if (Model.SelectedMaterial != null)
+        {
+
+
+            <p>selected material : @Model.SelectedMaterial.Name</p>
+            <form name="ChannelForm" asp-controller="Home" asp-action="Index" id="formselectChannel">
+
+                <div>
+                    <label asp-for="SelectedChannelIndex"></label>
+                    <select id="ChannelSelect" runat="server" name="SelectedChannelIndex" asp-for="SelectedChannelIndex" onchange="ChangeMeshSelect()">
+
+                        @foreach (var item in Model.SelectedMaterial.Channels)
+                        {
+
+                            <option value="@teller">@item.Key</option>
+                            teller++;
+                        }
+                    </select>
+                </div>
+                <input type="hidden" value="@Model.SelectedMeshIndex" asp-for="SelectedMeshIndex" />
+
+                <input type="hidden" value="@Model.SelectedMaterialIndex" asp-for="SelectedMaterialIndex" />
+
+                <button onclick="submit">Select Channel</button>
+            </form>
+        }
+        @if (Model.SelectedTexture != null)
+        {
+
+            <img src="~/Textures/SelectedImage.Png" height="200px" />
+
+            <p>upload a new image for this mesh</p>
+
+            <form asp-action="Index" enctype="multipart/form-data" method="post">
+                <dl>
+                    <dt>
+                        <label asp-for="NewtextureUpload"></label>
+                    </dt>
+                    <dd>
+                        <input asp-for="NewtextureUpload" type="file">
+                        <span asp-validation-for="NewtextureUpload"></span>
+                    </dd>
+                </dl>
+                <input type="hidden" value="@Model.SelectedChannelIndex" asp-for="SelectedChannelIndex" />
+
+                <button type="submit" value="Create">Change Texture</button>
+            </form>
+        }
+    </div>
+
+
+
+    <div id="materialpreview" class="split right">
+
+    </div>
+
+
+    <script type="module">
+
+
+        //Scene aanmaken
+var scene = new THREE.Scene();
+//backgroundcolor
+scene.background = new THREE.Color(0xc9c9c9);
+
+
+//Create renderer
+var renderer = new THREE.WebGLRenderer();
+renderer.gammaOutput = true;
+
+//Renderer Size
+var objectpreview = document.getElementById("materialpreview");
+var width = objectpreview.clientWidth;
+var height = objectpreview.clientHeight;
+renderer.setSize(width, height);
+
+
+//Add render to materialpreview
+
+objectpreview.appendChild(renderer.domElement);
+
+
+
+//resize window
+window.addEventListener('resize', function () {
+
+    var width = objectpreview.clientWidth;
+    var height = objectpreview.clientHeight;
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+});
+
+////Controls
+//controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+//Load object in Scene
+var loader = new THREE.GLTFLoader();
+loader.load(
+    // resource URL
+    'wwwroot/Objects/Current.glb',
+    // called when resource is loaded
+    function (gltf) {
+        scene.add(gltf.scene);
+        gltf.animations; // Array<THREE.AnimationClip>
+        gltf.scene; // THREE.Scene
+        gltf.scenes; // Array<THREE.Scene>
+        gltf.cameras; // Array<THREE.Camera>
+        gltf.asset; // Object
+    });
+
+//Add camera
+var camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+
+//Add light
+var directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+scene.add(directionalLight);
+
+//Add hdri
+var hdrUrls = ['px.hdr', 'nx.hdr', 'py.hdr', 'ny.hdr', 'pz.hdr', 'nz.hdr'];
+hdrCubeMap = new HDRCubeTextureLoader()
+    .setPath('wwwroot/Textures/pisaHDR/')
+    .setDataType(THREE.UnsignedByteType)
+    .load(hdrUrls, function () {
+
+        var pmremGenerator = new PMREMGenerator(hdrCubeMap);
+        pmremGenerator.update(renderer);
+
+        var pmremCubeUVPacker = new PMREMCubeUVPacker(pmremGenerator.cubeLods);
+        pmremCubeUVPacker.update(renderer);
+
+        hdrCubeRenderTarget = pmremCubeUVPacker.CubeUVRenderTarget;
+
+        hdrCubeMap.magFilter = THREE.LinearFilter;
+        hdrCubeMap.needsUpdate = true;
+
+        pmremGenerator.dispose();
+        pmremCubeUVPacker.dispose();
+
+    });
+
+//logic
+var update = function () {
+ 
+};
+
+//Draw  scene
+var render = function () {
+    
+    var renderTarget, cubeMap;
+    renderTarget = hdrCubeRenderTarget;
+    cubeMap = hdrCubeMap;
+    renderer.render(scene, camera);
+};
+
+//run game loop(update, render , repeat)
+var GameLoop = function () {
+    requestAnimationFrame(GameLoop);
+    update();
+    render();
+};
+
+GameLoop();
+
+
+    </script>
+    @*<script>
+            function ChangeMeshSelect() {
+
+                var selectmesh = document.getElementById("meshSelect");
+                var formmesh = document.getElementById("formselectmesh");
+                var index = selectmesh.options[selectmesh.selectedIndex].value;
+                console.log(index)
+
+                if (index != -1) {
+                    formmesh.submit();
+                }
+
+                var selectmaterial = document.getElementById("materialSelect");
+                var formmaterial = document.getElementById("formselectmaterial");
+                var index = selectmaterial.options[selectmaterial.selectedIndex].value;
+                console.log(index)
+
+                if (index != -1) {
+                    formmaterial.submit();
+                }
+            }
+
+        </script>*@
+
+
