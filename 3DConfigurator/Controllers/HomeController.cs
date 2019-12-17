@@ -33,7 +33,7 @@ namespace _3DConfigurator.Controllers
             GltfModel gltfModel = new GltfModel();
 
             //model populaten met ingeladen gltf
-            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+           var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {
@@ -96,6 +96,9 @@ namespace _3DConfigurator.Controllers
                 indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
                 indexViewModel.status = "SelectChannel";
+                indexPostVM.Alpha = indexViewModel.SelectedMaterial.Alpha;
+                indexPostVM.AlphaCutoff = indexViewModel.SelectedMaterial.AlphaCutoff;
+                indexPostVM.DoubleSided = indexViewModel.SelectedMaterial.DoubleSided;
                 return View(indexViewModel);
             }
 
@@ -108,7 +111,15 @@ namespace _3DConfigurator.Controllers
                     channellist.Add(item);
                 };
                 indexViewModel.SelectedTexture = channellist[Convert.ToInt32(indexPostVM.SelectedChannelIndex)].Texture;
-                editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
+
+                if (indexViewModel.SelectedTexture != null)
+                {
+                    editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
+                }
+               Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].Alpha = indexPostVM.Alpha;
+                Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].AlphaCutoff = indexPostVM.AlphaCutoff;
+                Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].DoubleSided = indexPostVM.DoubleSided;
+                editGltfService.SaveCurrentGltf(Currentmodel, Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
                 indexViewModel.GltfModel = Currentmodel;
                 indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;

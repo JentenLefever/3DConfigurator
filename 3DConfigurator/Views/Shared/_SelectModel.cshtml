@@ -33,7 +33,6 @@
                 }
             </select>
             <input type="hidden" value="@Model.SelectedMeshIndex" asp-for="SelectedMeshIndex" />
-            <input type="hidden" value="@Model.SelectedMaterialIndex" asp-for="SelectedMaterialIndex" />
 
             <input type="hidden" value="SelectChannel" asp-for="status" />
             <button class="btn btn-info" onclick="submit">Select Material</button>
@@ -48,16 +47,24 @@
     <form class="form-group" class="form-control" name="ChannelForm" asp-controller="Home" asp-action="Index" id="formselectChannel">
 
         <div>
-            <label asp-for="SelectedChannelIndex"></label>
-            <select class="form-control" id="ChannelSelect" runat="server" name="SelectedChannelIndex" asp-for="SelectedChannelIndex" onchange="ChangeMeshSelect()">
+            <p>Apha</p>
+            <input asp-for="Alpha" />
+            <p>AlphaCutoff</p>
+            <input asp-for="AlphaCutoff" />
+            <p>DoubleSided</p>
+            <input asp-for="DoubleSided" />
+            <div>
+                <label asp-for="SelectedChannelIndex"></label>
+                <select class="form-control" id="ChannelSelect" runat="server" name="SelectedChannelIndex" asp-for="SelectedChannelIndex" onchange="ChangeMeshSelect()">
 
-                @foreach (var item in Model.SelectedMaterial.Channels)
-                {
+                    @foreach (var item in Model.SelectedMaterial.Channels)
+                    {
 
-                    <option value="@teller">@item.Key</option>
-                    teller++;
-                }
-            </select>
+                        <option value="@teller">@item.Key</option>
+                        teller++;
+                    }
+                </select>
+            </div>
         </div>
         <input type="hidden" value="@Model.SelectedMeshIndex" asp-for="SelectedMeshIndex" />
         <input type="hidden" value="@Model.SelectedMaterialIndex" asp-for="SelectedMaterialIndex" />

@@ -56,26 +56,7 @@
         }
 
 
-        @if (Model.SelectedMesh != null)
-        {
-            <p>selected mes : @Model.SelectedMesh.Mesh.Name</p>
-            <form name="MaterialForm" asp-controller="Home" asp-action="Index" id="formselectmaterial">
-                <div>
-
-                    <label asp-for="SelectedMaterialIndex"></label>
-
-                    <select id="materialSelect" runat="server" name="SelectedMaterial" asp-for="SelectedMaterialIndex" onchange="ChangeMeshSelect()">
-                        @foreach (var item in Model.SelectedMesh.Materials)
-                        {
-                            <option value="@Convert.ToInt32(item.Material.LogicalIndex)">@item.Material.Name</option>
-                        }
-                    </select>
-                    <input type="hidden" value="-1" asp-for="SelectedChannelIndex" />
-
-                    <button onclick="submit">Select Material</button>
-                </div>
-            </form>
-        }
+        
 
         @if (Model.SelectedMaterial != null)
         {

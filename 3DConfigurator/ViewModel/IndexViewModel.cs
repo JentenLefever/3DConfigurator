@@ -26,6 +26,11 @@ namespace _3DConfigurator.ViewModel
 
         public IFormFile NewtextureUpload { get; set; }
 
+        public SharpGLTF.Schema2.AlphaMode Alpha { get; set; }
+        public float AlphaCutoff { get; set; }
+        public bool DoubleSided { get; set; }
+
+
     }
 
 }

@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\model\" />
+    <Folder Include="wwwroot\Users\" />
   </ItemGroup>
 
 

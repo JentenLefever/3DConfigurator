@@ -13,13 +13,11 @@ namespace _3DConfigurator.Services
         public GltfModel PopulateGltfModel(string objectAdres);
         public IEnumerable<Bitmap> CreateTextures(GltfModel gltfModel);
 
-        public Textures AddImageToTexture(Textures texture, string newTexturePath, string name);
 
         public SharpGLTF.Schema2.Image ReadImage(string imagePath, GltfModel gltfModel, string imageName);
 
         public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres);
 
-        public Materials AddNewMaterialtoGLTFWithTextures(GltfModel gltfmodel, string materialName);
 
         public void AddUploadedImageToSelectedTexture(SharpGLTF.Schema2.Texture texture, IFormFile NewTexture);
     }

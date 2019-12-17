@@ -12,12 +12,12 @@ background-color:grey;
 
 .ConfiguratieOptions {
     
-    height: 500px;
+    height: 40%;
     background-color:aqua;
 }
 
 .ConfiguratiePreview {
-    height: 500px;
+    height: 40%;
     width: 50%;
 }
 

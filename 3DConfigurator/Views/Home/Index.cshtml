@@ -5,34 +5,45 @@
 <link href="~/css/EditModelStyle.css" rel="stylesheet" />
 <partial name="_AddScripts" />
 
-<div id="ModelCanvas" class="ModelCanvas">
-</div>
-<div id=" ModelOptionsContainer" class="ModelOptionsContainer">
-    <button onclick="ShowHideOptions()" class="btn ShowHideButton">Show/hide</button>
-    <div id="ModelOptions" class="ModelOptions">
-        <button class="btn btn-info" onclick="RemoveObject()"> Start with clean object</button>
-        <div class="UploadNewModel">
-            <partial name="_UploadModel" />
+<div>
+    <div id="ModelCanvas" class="ModelCanvas">
+    </div>
+    <div id=" ModelOptionsContainer" class="ModelOptionsContainer">
+        <button onclick="ShowHideOptions()" class="btn ShowHideButton">Show/hide</button>
+        <div id="ModelOptions" class="ModelOptions">
+            <button class="btn btn-info" id="RemoveObject" onclick="RemoveObject()"> Start with clean object</button>
+            <div class="UploadNewModel">
+                <partial name="_UploadModel" />
+            </div>
+            <div class="SelectType">
+                <partial name="_SelectModel" />
+            </div>
+            <div class="ShowEditTexture">
+                <partial name="_ShowEditTexture" />
+            </div>
+
+
         </div>
-        <div class="SelectType">
-            <partial name="_SelectModel" />
-        </div>
-        <div class="ShowEditTexture">
-            <partial name="_ShowEditTexture" />
-        </div>
+        <button onclick="ShowHideSceneOptions()" class="btn ShowHideButton">Show/hide Scene options</button>
+        <div id="SceneOptions" class="ModelOptions">
+            <p>change hdri</p>
+            <button class="btn btn-info" id="Addhdri" onclick="changehdristatus()"> Show / hide hdri background</button>
+            <p>change model rotation</p>
+            <input type="range" min="0" max="8" value="0" class="custom-range" id="Rotaterange">
+         </div>
+
     </div>
 
 </div>
 
 
 
-<div id="materialpreview" class="split right">
 
-</div>
 
 <script src="~/js/three/three.js"></script>
 <script src="~/js/three/GLTFLoader.js"></script>
 <script src="~/js/three/OrbitControls.js"></script>
+<script src="~/js/three/DragControls.js"></script>
 <script src="~/js/three/RGBELoader.js"></script>
 <script src="~/js/three/PMREMCubeUVPacker.js"></script>
 <script src="~/js/three/PMREMGenerator.js"></script>
@@ -40,19 +51,33 @@
 
 <script type="text/javascript">
     var modelOptions = document.getElementById('ModelOptions')
-
+    var sceneOptions = document.getElementById('SceneOptions')
 
     function ShowHideOptions() {
 
         if (modelOptions.style.visibility == 'hidden') {
             modelOptions.style.visibility = 'visible';
-            modelOptions.style.height = '500px';
+            modelOptions.style.height = '40%';
         }
         else {
             modelOptions.style.visibility = 'hidden';
             modelOptions.style.height = '0px';
         }
     }
+
+    function ShowHideSceneOptions() {
+
+        if (sceneOptions.style.visibility == 'hidden') {
+            sceneOptions.style.visibility = 'visible';
+            sceneOptions.style.height = '40%';
+        }
+        else {
+            sceneOptions.style.visibility = 'hidden';
+            sceneOptions.style.height = '0px';
+        }
+    }
+
+
 
 </script>
 

@@ -14,8 +14,6 @@ namespace _3DConfigurator
         public static void Main(string[] args)
         {
             
-            
-            
             CreateHostBuilder(args).Build().Run();
         }
 

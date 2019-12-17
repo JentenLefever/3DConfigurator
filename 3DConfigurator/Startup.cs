@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.StaticFiles;
 using _3DConfigurator.Hub;
+using _3DConfigurator.Models.Identity;
 
 namespace _3DConfigurator
 {
@@ -32,8 +33,21 @@ namespace _3DConfigurator
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //services.AddIdentity<User, IdentityRole>(options =>
+            //{
+            //    options.User.RequireUniqueEmail = false;
+            //})
+            // .AddEntityFrameworkStores<ApplicationDbContext>()
+            // .AddDefaultTokenProviders();
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.User.RequireUniqueEmail = false;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.AddMvc();
@@ -65,8 +79,7 @@ namespace _3DConfigurator
                 app.UseHsts();
             }
             app.UseStaticFiles();
-            app.UseSignalR(config => { config.MapHub<AddMaterialListHub>("/materials");});
-        
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

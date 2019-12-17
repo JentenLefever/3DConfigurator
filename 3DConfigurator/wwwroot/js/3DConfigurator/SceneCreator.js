@@ -3,27 +3,22 @@
 
 var renderer = new THREE.WebGLRenderer({ div: document.getElementById('ModelCanvas'), antalias: true });
 var modelRenderer = document.getElementById('ModelCanvas');
-renderer.setClearColor(0x00ff00);
+renderer.setClearColor(0xDCDCDC);
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(modelRenderer.clientWidth, modelRenderer.clientHeight);
 renderer.gammaOutput = true;
 modelRenderer.appendChild(renderer.domElement);
 
 //Camera
-var camera = new THREE.PerspectiveCamera(45, modelRenderer.clientWidth / modelRenderer.clientHeight, 0.25, 20);
+var camera = new THREE.PerspectiveCamera(45, modelRenderer.clientWidth / modelRenderer.clientHeight, 0.25, 1000);
 camera.position.set(0, 0.9, 8);
 
 //scene
 var scene = new THREE.Scene();
 
-//Controls
-var controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-//controls.update() must be called after any manual changes to the camera's transform
-
-controls.update();
 
 //object
+var objects = [];
 new THREE.RGBELoader()
     .setDataType(THREE.UnsignedByteType)
     .setPath('wwwroot/Textures/')
@@ -34,9 +29,10 @@ new THREE.RGBELoader()
             magFilter: texture.magFilter
         };
 
-        scene.background = new THREE.WebGLRenderTargetCube(1024, 1024, options).fromEquirectangularTexture(renderer, texture);
-
-        var pmremGenerator = new THREE.PMREMGenerator(scene.background.texture);
+        
+        var hrdBackground = new THREE.WebGLRenderTargetCube(5000, 5000, options).fromEquirectangularTexture(renderer, texture);
+        scene.background = hrdBackground;
+        var pmremGenerator = new THREE.PMREMGenerator(hrdBackground.texture);
         pmremGenerator.update(renderer);
 
         var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(pmremGenerator.cubeLods);
@@ -58,9 +54,8 @@ new THREE.RGBELoader()
                 }
 
             });
-
+            
             scene.add(gltf.scene);
-
         });
 
         pmremGenerator.dispose();
@@ -68,16 +63,70 @@ new THREE.RGBELoader()
 
     });
 
+var removeObject = document.getElementById('RemoveObject');
+removeObject.onclick = function () {
+    while (scene.children.length > 0) {
+        scene.remove(scene.children[0]);
+    }
+};
+
+var Addhdributton = document.getElementById('Addhdri');
+var background = scene.background;
+Addhdributton.onclick = function () {
+
+    
+    if (scene.background !== null) {
+        console.log("changedhdri");
+        scene.background = null;
+        render();
+        
+    }
+    else {
+        new THREE.RGBELoader()
+            .setDataType(THREE.UnsignedByteType)
+            .setPath('wwwroot/Textures/')
+            .load('pedestrian_overpass_2k.hdr', function (texture) {
+                var options = {
+                    minFilter: texture.minFilter,
+                    magFilter: texture.magFilter
+                };
+                texture.offset = .5;
+                scene.background = new THREE.WebGLRenderTargetCube(5000, 5000, options).fromEquirectangularTexture(renderer, texture);
+            });
+       
+        render();
+    }
+    
+};
+
+var slider = document.getElementById("Rotaterange");
+slider.oninput = function () {
+    scene.children[0].rotation.y = this.value;
+    
+};
+
 
 requestAnimationFrame(render);
 
 //light
-var light = new THREE.AmbientLight(0xffffff, 0.8);
+//var light = new THREE.AmbientLight(0xffffff, 0.8);
 
-scene.add(light);
+//scene.add(light);
 
 
+//Controls
+var controls;
 
+
+        //controls = new THREE.DragControls(objects, camera, renderer.domElement);
+   
+       controls = new THREE.OrbitControls(camera, renderer.domElement);
+    
+
+
+    //controls.update() must be called after any manual changes to the camera's transform
+
+    controls.update();
 
 function render() {
     
@@ -88,9 +137,9 @@ function render() {
 window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
 
-    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.aspect = modelRenderer.clientWidth / modelRenderer.clientHeight;
     camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(modelRenderer.clientWidth, modelRenderer.clientHeight);
 
 }
