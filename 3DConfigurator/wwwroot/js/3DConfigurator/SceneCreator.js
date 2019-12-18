@@ -43,7 +43,7 @@ new THREE.RGBELoader()
         // model
                 
         var loader = new THREE.GLTFLoader().setPath('wwwroot/Objects/');
-        loader.load('Current.glb', function (gltf) {
+        loader.load('CurrentGlb.glb', function (gltf) {
 
             gltf.scene.traverse(function (child) {
 

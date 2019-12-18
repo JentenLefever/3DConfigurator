@@ -33,7 +33,7 @@ namespace _3DConfigurator.Controllers
             GltfModel gltfModel = new GltfModel();
 
             //model populaten met ingeladen gltf
-            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {
@@ -74,14 +74,14 @@ namespace _3DConfigurator.Controllers
             if (indexPostVM.GltfUpload != null)
             {
                 editGltfService.UploadGLTFModel(indexPostVM.GltfUpload);
-                var currentModel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+                var currentModel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
                 indexViewModel.status = "SelectMesh";
                 indexViewModel.GltfModel = currentModel;
-
+                editGltfService.SaveCurrentGltf(currentModel);
                 return View(indexViewModel);
             }
 
-            var Currentmodel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            var Currentmodel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
 
             //Show Materials in Mesh
             if (indexPostVM.status == "SelectMaterial")
@@ -126,7 +126,9 @@ namespace _3DConfigurator.Controllers
                 Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].Alpha = indexPostVM.Alpha;
                 Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].AlphaCutoff = indexPostVM.AlphaCutoff;
                 Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].DoubleSided = indexPostVM.DoubleSided;
-                editGltfService.SaveCurrentGltf(Currentmodel, Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+                editGltfService.SaveCurrentGltf(Currentmodel);
+
+                //viewmodel invullen
                 indexViewModel.GltfModel = Currentmodel;
                 indexViewModel.SelectedMaterialIndex = indexPostVM.SelectedMaterialIndex;
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
@@ -150,7 +152,7 @@ namespace _3DConfigurator.Controllers
             GltfModel gltfModel = new GltfModel();
 
             //model populaten met ingeladen gltf
-            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {

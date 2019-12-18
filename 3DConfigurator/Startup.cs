@@ -81,6 +81,7 @@ namespace _3DConfigurator
             app.UseStaticFiles();
 
             app.UseHttpsRedirection();
+
             app.UseStaticFiles();
 
             app.UseRouting();

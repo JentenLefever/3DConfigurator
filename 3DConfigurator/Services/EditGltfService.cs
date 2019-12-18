@@ -21,11 +21,12 @@ namespace _3DConfigurator.Services
 
         public void UploadGLTFModel(IFormFile NewModel)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Objects", "Current.glb");
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\Objects", "CurrentGlb.glb");
             var filestream = new FileStream(filePath, FileMode.Create);
             NewModel.CopyTo(filestream);
             filestream.Dispose();
 
+            
 
 
         }
@@ -76,9 +77,9 @@ gltfModel.MeshesVerzameling = meshesInGltf;
             return image;
         }
 
-        public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres)
+        public void SaveCurrentGltf(GltfModel gltfmodel)
         {
-            gltfmodel.gltf.SaveGLB(saveAdres);
+            gltfmodel.gltf.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
             gltfmodel.gltf.SaveGLTF(Path.Combine(_env.WebRootPath, "Objects", "Current.gltf"));
         }
 
@@ -95,7 +96,7 @@ gltfModel.MeshesVerzameling = meshesInGltf;
             image.SetSatelliteFile(filePath);
 
             texture.Image = image;
-            texture.LogicalParent.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            texture.LogicalParent.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
             texture.LogicalParent.SaveGLTF(Path.Combine(_env.WebRootPath, "Objects", "Current.gltf"));
         }
 

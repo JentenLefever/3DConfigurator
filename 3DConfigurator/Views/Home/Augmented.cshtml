@@ -1,23 +1,66 @@
 ﻿<!doctype HTML>
 <html>
-
-<script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script>
-<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/build/aframe-ar.js" "></script>
+<script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+<script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.6.0/aframe/build/aframe-ar.js"></script>
 <body style='margin : 0px; overflow: hidden;'>
-    <a-scene embedded arjs="debugUIEnabled: false;">
-        <!-- below is for content -->
-        <a-assets>
-            <!-- id=“file name“ src=“file url" -->
-            <a-asset-item id="Current" src="https://handbaldesselgem.be.iis.websrv.be/wwwroot/objects/current.gltf"></a-asset-item>
-        </a-assets>
-        <!-- scale values allow you to adjust the file’s display size, gltf-model=“#your file name“ -->
-        <a-entity scale="1 1 1" gltf-model="#Current"></a-entity>
-        <a-marker-camera preset='hiro'></a-marker-camera>
+    <a-scene embedded arjs='trackingMethod: best; debugUIEnabled: false;'>
+        <a-entity light="type: ambient; intensity: 1.5;"></a-entity>
+        <a-marker preset='hiro'>
+            <!--a-marker preset='hiro'-->
+
+            <a-gltf-model src="https://handbaldesselgem.be.iis.websrv.be/wwwroot/objects/current.gltf" scale="1 1 1" position="0 1 0" rotation="-90 0 0">
+                <a-animation attribute="rotation"
+                             dur="10000"
+                             from="0 0 0"
+                             to="0 360 0"
+                             easing="linear"
+                             repeat="indefinite">
+                </a-animation>
+            </a-gltf-model>
+        </a-marker>
+        <a-camera-static />
     </a-scene>
 </body>
+<script src="~/js/hammer.min.js"></script>
+<script>
+    
+    AFRAME.registerComponent("foo",{
+    init:function() {
+      var element = document.querySelector('body');
+      this.marker = document.querySelector('a-marker')
+      var model = document.querySelector('a-gltf-model');
+      var hammertime = new Hammer(element);
+      var pinch = new Hammer.Pinch(); // Pinch is not by default in the recognisers
+      hammertime.add(pinch); // add it to the Manager instance
 
+      hammertime.on('pan', (ev) => {
+        let rotation = model.getAttribute("rotation")
+        switch(ev.direction) {
+          case 2:
+            rotation.y = rotation.y + 4
+            break;
+          case 4:
+            rotation.y = rotation.y - 4
+            break;
+          case 8:
+            rotation.x = rotation.x + 4
+            break;
+          case 16:
+            rotation.x = rotation.x - 4
+            break;
+          default:
+            break;
+        }
+        model.setAttribute("rotation", rotation)
+      });
 
+     hammertime.on("pinch", (ev) => {
+        let scale = {x:ev.scale, y:ev.scale, z:ev.scale}
+        model.setAttribute("scale", scale);
+    });
+  }
+});
 
-
-
+</script>
 </html>
+

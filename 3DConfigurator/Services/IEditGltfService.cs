@@ -16,7 +16,7 @@ namespace _3DConfigurator.Services
 
         public SharpGLTF.Schema2.Image ReadImage(string imagePath, GltfModel gltfModel, string imageName);
 
-        public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres);
+        public void SaveCurrentGltf(GltfModel gltfmodel);
 
 
         public void AddUploadedImageToSelectedTexture(SharpGLTF.Schema2.Texture texture, IFormFile NewTexture);
