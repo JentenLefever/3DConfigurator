@@ -1,4 +1,4 @@
-﻿
+﻿let  composer;
 //Renderer
 
 var renderer = new THREE.WebGLRenderer({ div: document.getElementById('ModelCanvas'), antalias: true });
@@ -10,7 +10,7 @@ renderer.gammaOutput = true;
 modelRenderer.appendChild(renderer.domElement);
 
 //Camera
-var camera = new THREE.PerspectiveCamera(45, modelRenderer.clientWidth / modelRenderer.clientHeight, 0.25, 1000);
+var camera = new THREE.PerspectiveCamera(60, modelRenderer.clientWidth / modelRenderer.clientHeight, 0.25, 1000);
 camera.position.set(0, 0.9, 8);
 
 //scene
@@ -63,6 +63,68 @@ new THREE.RGBELoader()
 
     });
 
+
+
+
+requestAnimationFrame(render);
+
+
+//Controls
+var controls;
+
+
+//controls = new THREE.DragControls(objects, camera, renderer.domElement);
+
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+
+
+//controls.update() must be called after any manual changes to the camera's transform
+
+controls.update();
+
+
+
+//composer
+composer = new POSTPROCESSING.EffectComposer(renderer);
+composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+
+const effectPass = new POSTPROCESSING.EffectPass(
+    camera,
+);
+effectPass.renderToScreen = true;
+composer.addPass(effectPass);
+
+
+//Actions
+
+var addbloom = document.getElementById('addbloom');
+var bloom = false;
+addbloom.onclick = function () {
+    if (bloom === false) {
+        const effectPass = new POSTPROCESSING.EffectPass(
+            camera,
+            new POSTPROCESSING.BloomEffect()
+        );
+        effectPass.renderToScreen = true;
+        composer.addPass(effectPass);
+        bloom = true;
+    }
+    else {
+        composer = new POSTPROCESSING.EffectComposer(renderer);
+        composer.addPass(new POSTPROCESSING.RenderPass(scene, camera));
+
+        const effectPass = new POSTPROCESSING.EffectPass(
+            camera,
+        );
+        effectPass.renderToScreen = true;
+        composer.addPass(effectPass);
+        bloom = false;
+    }
+    
+};
+
+
 var removeObject = document.getElementById('RemoveObject');
 removeObject.onclick = function () {
     while (scene.children.length > 0) {
@@ -99,6 +161,17 @@ Addhdributton.onclick = function () {
     
 };
 
+
+//var colorpicker = document.getElementById("colorpicker");
+//colorpicker.onchange = function () {
+//    scene.background = null;
+//    var colors = "#" + this.value;
+//    var color = new THREE.Color(Color.decode(this.value));
+//    renderer.setClearColor(this.value);
+
+//};
+
+
 var slider = document.getElementById("Rotaterange");
 slider.oninput = function () {
     scene.children[0].rotation.y = this.value;
@@ -106,33 +179,6 @@ slider.oninput = function () {
 };
 
 
-requestAnimationFrame(render);
-
-//light
-//var light = new THREE.AmbientLight(0xffffff, 0.8);
-
-//scene.add(light);
-
-
-//Controls
-var controls;
-
-
-        //controls = new THREE.DragControls(objects, camera, renderer.domElement);
-   
-       controls = new THREE.OrbitControls(camera, renderer.domElement);
-    
-
-
-    //controls.update() must be called after any manual changes to the camera's transform
-
-    controls.update();
-
-function render() {
-    
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
-}
 
 window.addEventListener('resize', onWindowResize, false);
 function onWindowResize() {
@@ -142,4 +188,10 @@ function onWindowResize() {
 
     renderer.setSize(modelRenderer.clientWidth, modelRenderer.clientHeight);
 
+}
+
+function render() {
+
+    composer.render();
+    requestAnimationFrame(render);
 }

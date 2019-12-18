@@ -2,83 +2,122 @@
     ViewData["Title"] = "EditModel";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<link href="~/css/EditModelStyle.css" rel="stylesheet" />
-<partial name="_AddScripts" />
+@model _3DConfigurator.ViewModel.IndexViewModel
+@if (Model.status != "ShowAR")
+{
 
-<div>
-    <div id="ModelCanvas" class="ModelCanvas">
-    </div>
-    <div id=" ModelOptionsContainer" class="ModelOptionsContainer">
-        <button onclick="ShowHideOptions()" class="btn ShowHideButton">Show/hide</button>
-        <div id="ModelOptions" class="ModelOptions">
-            <button class="btn btn-info" id="RemoveObject" onclick="RemoveObject()"> Start with clean object</button>
-            <div class="UploadNewModel">
-                <partial name="_UploadModel" />
-            </div>
-            <div class="SelectType">
-                <partial name="_SelectModel" />
-            </div>
-            <div class="ShowEditTexture">
-                <partial name="_ShowEditTexture" />
-            </div>
 
+    <link href="~/css/EditModelStyle.css" rel="stylesheet" />
+    <script src="~/js/jscolor.js"></script>
+    <partial name="_AddScripts" />
+
+    <div>
+        <div id="ModelCanvas" class="ModelCanvas">
+        </div>
+        <div id=" ModelOptionsContainer" class="ModelOptionsContainer">
+            <button onclick="ShowHideOptions()" class="btn ShowHideButton">Show/hide</button>
+            <div id="ModelOptions" class="ModelOptions">
+                <form asp-action="Augmented" method="post">
+                    <input type="hidden" value="ShowAR" asp-for="status" />
+                    <button class="btn btn-info" type="submit"> show in AR</button>
+                </form>
+
+                <button class="btn btn-info" id="RemoveObject" onclick="RemoveObject()"> Start with clean object</button>
+                <div class="UploadNewModel">
+                    <partial name="_UploadModel" />
+                </div>
+                <div class="SelectType">
+                    <partial name="_SelectModel" />
+                </div>
+                <div class="ShowEditTexture">
+                    <partial name="_ShowEditTexture" />
+                </div>
+
+
+            </div>
+            <button onclick="ShowHideSceneOptions()" class="btn ShowHideButton">Show/hide Scene options</button>
+            <div id="SceneOptions" class="ModelOptions">
+                <p>change hdri</p>
+                <button class="btn btn-info" id="Addhdri" onclick="changehdristatus()"> Show / hide hdri background</button>
+                @*Background color: <input class="jscolor" id="colorpicker" value="ffffff">*@
+                <p>change model Y rotation</p>
+                <input type="range" min="0" max="8" value="0" class="custom-range" id="Rotaterange" step="0.05">
+                <button class="btn btn-info" id="addbloom" onclick="Addbloom()"> Add bloom effect (postprocessing)</button>
+
+            </div>
 
         </div>
-        <button onclick="ShowHideSceneOptions()" class="btn ShowHideButton">Show/hide Scene options</button>
-        <div id="SceneOptions" class="ModelOptions">
-            <p>change hdri</p>
-            <button class="btn btn-info" id="Addhdri" onclick="changehdristatus()"> Show / hide hdri background</button>
-            <p>change model rotation</p>
-            <input type="range" min="0" max="8" value="0" class="custom-range" id="Rotaterange">
-         </div>
 
     </div>
 
-</div>
 
 
+    <script src="~/js/three/postprocessing.min.js"></script>
+    <script src="~/js/three/three.js"></script>
+    <script src="~/js/three/GLTFLoader.js"></script>
+    <script src="~/js/three/OrbitControls.js"></script>
+    <script src="~/js/three/DragControls.js"></script>
+    <script src="~/js/three/RGBELoader.js"></script>
+    <script src="~/js/three/PMREMCubeUVPacker.js"></script>
+    <script src="~/js/three/PMREMGenerator.js"></script>
+    <script type="module" src="~/js/3DConfigurator/SceneCreator.js"></script>
 
+    <script type="text/javascript">
+        var modelOptions = document.getElementById('ModelOptions')
+        var sceneOptions = document.getElementById('SceneOptions')
 
+        function ShowHideOptions() {
 
-<script src="~/js/three/three.js"></script>
-<script src="~/js/three/GLTFLoader.js"></script>
-<script src="~/js/three/OrbitControls.js"></script>
-<script src="~/js/three/DragControls.js"></script>
-<script src="~/js/three/RGBELoader.js"></script>
-<script src="~/js/three/PMREMCubeUVPacker.js"></script>
-<script src="~/js/three/PMREMGenerator.js"></script>
-<script type="module" src="~/js/3DConfigurator/SceneCreator.js"></script>
-
-<script type="text/javascript">
-    var modelOptions = document.getElementById('ModelOptions')
-    var sceneOptions = document.getElementById('SceneOptions')
-
-    function ShowHideOptions() {
-
-        if (modelOptions.style.visibility == 'hidden') {
-            modelOptions.style.visibility = 'visible';
-            modelOptions.style.height = '40%';
+            if (modelOptions.style.visibility == 'hidden') {
+                modelOptions.style.visibility = 'visible';
+                modelOptions.style.height = '40%';
+            }
+            else {
+                modelOptions.style.visibility = 'hidden';
+                modelOptions.style.height = '0px';
+            }
         }
-        else {
-            modelOptions.style.visibility = 'hidden';
-            modelOptions.style.height = '0px';
+
+        function ShowHideSceneOptions() {
+
+            if (sceneOptions.style.visibility == 'hidden') {
+                sceneOptions.style.visibility = 'visible';
+                sceneOptions.style.height = '40%';
+            }
+            else {
+                sceneOptions.style.visibility = 'hidden';
+                sceneOptions.style.height = '0px';
+            }
         }
-    }
-
-    function ShowHideSceneOptions() {
-
-        if (sceneOptions.style.visibility == 'hidden') {
-            sceneOptions.style.visibility = 'visible';
-            sceneOptions.style.height = '40%';
-        }
-        else {
-            sceneOptions.style.visibility = 'hidden';
-            sceneOptions.style.height = '0px';
-        }
-    }
 
 
 
-</script>
+    </script>
+
+}
+@if (Model.status == "ShowAR")
+{
+
+
+
+    <script src="https://aframe.io/releases/1.0.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/jeromeetienne/AR.js/1.7.5/aframe/build/aframe-ar.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+
+    <body style='margin : 0px; overflow: hidden;'>
+        <a-scene embedded arjs>
+
+            <a-marker preset='hiro'>
+                <!--Adding a glTF 2.0 model to your scene-->
+                <a-entity gltf-model-next="src: url(/wwwroot/Objects/Current.glb);">
+                </a-entity>
+
+            </a-marker>
+
+            <a-entity camera></a-entity>
+        </a-scene>
+    </body>
+}
+
 
 

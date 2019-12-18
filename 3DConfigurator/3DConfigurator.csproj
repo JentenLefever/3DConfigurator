@@ -38,13 +38,11 @@
 
 
   <ItemGroup>
-    <Folder Include="wwwroot\model\" />
     <Folder Include="wwwroot\Users\" />
   </ItemGroup>
 
 
   <ItemGroup>
-    <None Include="wwwroot\model\01_textured_sphere.gltf" />
     <None Include="wwwroot\Textures\pisaHDR\nx.hdr" />
     <None Include="wwwroot\Textures\pisaHDR\ny.hdr" />
     <None Include="wwwroot\Textures\pisaHDR\nz.hdr" />

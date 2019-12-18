@@ -79,6 +79,7 @@ gltfModel.MeshesVerzameling = meshesInGltf;
         public void SaveCurrentGltf(GltfModel gltfmodel, string saveAdres)
         {
             gltfmodel.gltf.SaveGLB(saveAdres);
+            gltfmodel.gltf.SaveGLTF(Path.Combine(_env.WebRootPath, "Objects", "Current.gltf"));
         }
 
         public void AddUploadedImageToSelectedTexture(SharpGLTF.Schema2.Texture texture,IFormFile NewTexture)
@@ -95,6 +96,7 @@ gltfModel.MeshesVerzameling = meshesInGltf;
 
             texture.Image = image;
             texture.LogicalParent.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            texture.LogicalParent.SaveGLTF(Path.Combine(_env.WebRootPath, "Objects", "Current.gltf"));
         }
 
 

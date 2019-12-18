@@ -18,6 +18,7 @@ namespace _3DConfigurator.Services
             currentGltfModel.Materials = LoadedModel.LogicalMaterials.ToList();
             currentGltfModel.Meshes = LoadedModel.LogicalMeshes.ToList();
             LoadedModel.SaveGLB(saveadres);
+            LoadedModel.SaveGLTF(saveadres);
             return currentGltfModel;
         }
         

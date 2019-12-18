@@ -33,7 +33,7 @@ namespace _3DConfigurator.Controllers
             GltfModel gltfModel = new GltfModel();
 
             //model populaten met ingeladen gltf
-           var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
+            var Currentmodel = gltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
 
             IndexViewModel indexViewModel = new IndexViewModel()
             {
@@ -63,6 +63,13 @@ namespace _3DConfigurator.Controllers
             EditGltfService editGltfService = new EditGltfService(_env);
             IndexViewModel indexViewModel = new IndexViewModel();
 
+            if (indexPostVM.status == "ShowAR")
+            {
+                indexViewModel.status = indexPostVM.status;
+                return View(indexViewModel);
+
+            }
+
             //uploaden van nieuwe gltf
             if (indexPostVM.GltfUpload != null)
             {
@@ -70,7 +77,7 @@ namespace _3DConfigurator.Controllers
                 var currentModel = editGltfService.PopulateGltfModel(Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
                 indexViewModel.status = "SelectMesh";
                 indexViewModel.GltfModel = currentModel;
-                
+
                 return View(indexViewModel);
             }
 
@@ -85,7 +92,7 @@ namespace _3DConfigurator.Controllers
                 indexViewModel.status = "SelectMaterial";
                 indexViewModel.SelectedMeshIndex = indexPostVM.SelectedMeshIndex;
                 return View(indexViewModel);
-                
+
             }
 
             //Show Channels in Material
@@ -116,7 +123,7 @@ namespace _3DConfigurator.Controllers
                 {
                     editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
                 }
-               Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].Alpha = indexPostVM.Alpha;
+                Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].Alpha = indexPostVM.Alpha;
                 Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].AlphaCutoff = indexPostVM.AlphaCutoff;
                 Currentmodel.gltf.LogicalMaterials[indexPostVM.SelectedMaterialIndex].DoubleSided = indexPostVM.DoubleSided;
                 editGltfService.SaveCurrentGltf(Currentmodel, Path.Combine(_env.WebRootPath, "Objects", "Current.glb"));
@@ -130,7 +137,7 @@ namespace _3DConfigurator.Controllers
                     editGltfService.AddUploadedImageToSelectedTexture(indexViewModel.SelectedTexture, indexPostVM.NewtextureUpload);
                     editGltfService.LoadImageFromTexture(indexViewModel.SelectedTexture);
                     return View(indexViewModel);
-                    
+
                 }
             }
 
@@ -154,5 +161,9 @@ namespace _3DConfigurator.Controllers
             return View(indexViewModel);
         }
 
+        public async Task<IActionResult> Augmented(IndexViewModel indexPostVM)
+        {
+            return View();
+        }
     }
 }
