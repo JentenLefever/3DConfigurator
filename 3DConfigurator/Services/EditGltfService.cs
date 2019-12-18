@@ -79,6 +79,7 @@ gltfModel.MeshesVerzameling = meshesInGltf;
 
         public void SaveCurrentGltf(GltfModel gltfmodel)
         {
+
             gltfmodel.gltf.SaveGLB(Path.Combine(_env.WebRootPath, "Objects", "CurrentGlb.glb"));
             gltfmodel.gltf.SaveGLTF(Path.Combine(_env.WebRootPath, "Objects", "Current.gltf"));
         }

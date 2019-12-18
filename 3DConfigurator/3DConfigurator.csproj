@@ -7,15 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Duck.gltf" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Duck.gltf">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="ViewModel\IndexViewModel.cs" />
   </ItemGroup>
 
